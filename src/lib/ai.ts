@@ -14,7 +14,7 @@ export async function complete(messages: ChatMessage[], signal?: AbortSignal): P
   try {
     res = await fetch(`${aiConfig.baseUrl.replace(/\/$/, "")}/chat/completions`, {
       method: "POST",
-      signal,
+      signal: signal ?? null,
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${aiConfig.apiKey}` },
       body: JSON.stringify({ model: aiConfig.model, messages, temperature: 0.6 }),
     });

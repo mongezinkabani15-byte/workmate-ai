@@ -18,9 +18,9 @@
  * ============================================================
  */
 export const aiConfig = {
-  apiKey: (import.meta.env.VITE_AI_API_KEY as string | undefined) ?? "",
-  baseUrl: (import.meta.env.VITE_AI_BASE_URL as string | undefined) ?? "https://api.openai.com/v1",
-  model: (import.meta.env.VITE_AI_MODEL as string | undefined) ?? "gpt-4o-mini",
+  apiKey: (import.meta.env["VITE_AI_API_KEY"] as string | undefined) ?? "",
+  baseUrl: (import.meta.env["VITE_AI_BASE_URL"] as string | undefined) ?? "https://api.openai.com/v1",
+  model: (import.meta.env["VITE_AI_MODEL"] as string | undefined) ?? "gpt-4o-mini",
 };
 
 export const isAIConfigured = () => aiConfig.apiKey.trim().length > 0;
