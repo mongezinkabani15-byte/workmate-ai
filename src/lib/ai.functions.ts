@@ -8,7 +8,7 @@ export const aiComplete = createServerFn({ method: "POST" })
     return { messages: d.messages.slice(-40).map((m) => ({ role: m.role, content: String(m.content).slice(0, 20000) })) };
   })
   .handler(async ({ data }): Promise<{ text?: string; error?: string }> => {
-    const key = process.env.LOVABLE_API_KEY;
+    const key = process.env["LOVABLE_API_KEY"];
     if (!key) return { error: "AI service is not configured." };
     const system = data.messages.filter((m) => m.role === "system").map((m) => m.content).join("\n\n");
     const input = data.messages.filter((m) => m.role !== "system");
