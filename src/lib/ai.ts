@@ -1,4 +1,4 @@
-import { aiConfig, isAIConfigured } from "./ai-config";
+import { aiComplete } from "./ai.functions";
 
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
@@ -8,28 +8,15 @@ export class AINotConfiguredError extends Error {
   }
 }
 
-export async function complete(messages: ChatMessage[], signal?: AbortSignal): Promise<string> {
-  if (!isAIConfigured()) throw new AINotConfiguredError();
-  let res: Response;
+export async function complete(messages: ChatMessage[], _signal?: AbortSignal): Promise<string> {
+  let r: { text?: string; error?: string };
   try {
-    res = await fetch(`${aiConfig.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-      method: "POST",
-      signal: signal ?? null,
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${aiConfig.apiKey}` },
-      body: JSON.stringify({ model: aiConfig.model, messages, temperature: 0.6 }),
-    });
+    r = await aiComplete({ data: { messages } });
   } catch {
-    throw new Error("Could not reach the AI service. Check your connection and base URL.");
+    throw new Error("Could not reach the AI service. Check your connection.");
   }
-  if (!res.ok) {
-    if (res.status === 401) throw new Error("The AI service rejected the API key (401).");
-    if (res.status === 429) throw new Error("Rate limit reached (429). Please wait and try again.");
-    throw new Error(`AI service error (${res.status}).`);
-  }
-  const data = await res.json();
-  const text = data?.choices?.[0]?.message?.content;
-  if (!text) throw new Error("The AI service returned an empty response.");
-  return String(text).trim();
+  if (r.error || !r.text) throw new Error(r.error ?? "Empty response.");
+  return r.text;
 }
 
 export type Tone = "Formal" | "Friendly" | "Persuasive";
